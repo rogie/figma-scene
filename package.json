@@ -1,0 +1,23 @@
+{
+  "name": "figma-scene",
+  "version": "1.0.0",
+  "description": "Figma RPC",
+  "type": "module",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.100.2",
+    "@types/bun": "latest",
+    "@types/uuid": "^10.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "uuid": "^10.0.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "bun build src/index.ts --target browser --outdir dist && bun run build:declaration",
+    "build:declaration": "tsc --emitDeclarationOnly"
+  }
+}
