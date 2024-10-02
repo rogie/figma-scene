@@ -7,8 +7,6 @@ type PromiseResolvers = {
 };
 
 class FigmaScene {
-  [key: string]: any;
-
   private static instance: FigmaScene;
   private callbacks: Map<string, CallbackFunction>;
   private promises: Map<string, PromiseResolvers>;
@@ -68,64 +66,6 @@ class FigmaScene {
     });
   }
 
-  async notify(message: string, options?: NotificationOptions) {
-    return await this.run(
-      ({ message, options }) => {
-        figma.notify(message, options);
-      },
-      { message: message.toString(), options }
-    );
-  }
-
-  async resizeUI(width: number, height: number) {
-    return this.run(
-      ({ width, height }) => {
-        figma.ui.resize(Math.floor(width), Math.floor(height));
-      },
-      { width, height }
-    );
-  }
-
-  async getCurrentUser() {
-    return this.run(() => {
-      return figma.currentUser;
-    });
-  }
-
-  async supportsVideo() {
-    return this.run(async () => {
-      try {
-        const webm =
-          "GkXfo0AgQoaBAUL3gQFC8oEEQvOBCEKCQAR3ZWJtQoeBAkKFgQIYU4BnQI0VSalmQCgq17FAAw9CQE2AQAZ3aGFtbXlXQUAGd2hhbW15RIlACECPQAAAAAAAFlSua0AxrkAu14EBY8WBAZyBACK1nEADdW5khkAFVl9WUDglhohAA1ZQOIOBAeBABrCBCLqBCB9DtnVAIueBAKNAHIEAAIAwAQCdASoIAAgAAUAmJaQAA3AA/vz0AAA=";
-        await figma.createVideoAsync(figma.base64Decode(webm));
-        return true;
-      } catch (e) {
-        return false;
-      }
-    });
-  }
-
-  async getClientStorage(key: string) {
-    return this.run(async (key) => {
-      return await figma.clientStorage.getAsync(key);
-    }, key);
-  }
-
-  async setClientStorage(key: string, value: any) {
-    return this.run(
-      async (args: { key: string; value: any }) => {
-        return await figma.clientStorage.setAsync(args.key, args.value);
-      },
-      { key, value }
-    );
-  }
-
-  async deleteClientStorage(key: string) {
-    return this.run(async (key) => {
-      return await figma.clientStorage.deleteAsync(key);
-    }, key);
-  }
-
   init() {
     if (this.initialized) return;
     this.initialized = true;
@@ -156,26 +96,7 @@ class FigmaScene {
         if (callback) {
           await callback(returnValue);
         }
-      } else if (msg && msg.action === "figma-scene-init") {
-        this.setupFigmaFunctions(msg.functions);
       }
-    });
-  }
-
-  setupFigmaFunctions(functions: string[]) {
-    functions.forEach((name) => {
-      this[name] = (...args: any[]) => {
-        return this.run(
-          (args: { name: string; args: any[] }) => {
-            // TODO: @vvandermeulen: Remove casting
-            if (typeof figma[args.name as keyof typeof figma] === "function") {
-              const func = figma[args.name as keyof typeof figma] as Function;
-              return func.apply(null, args.args);
-            }
-          },
-          { name, args }
-        );
-      };
     });
   }
 
