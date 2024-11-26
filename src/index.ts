@@ -101,6 +101,7 @@ class FigmaScene {
   }
 
   setupFigmaUIMessageHandler() {
+    (globalThis as any).scene = this;
     figma.ui.on("message", async (msg) => {
       if (msg && msg.action) {
         try {

@@ -91,47 +91,6 @@ class FigmaScene {
       });
     });
   }
-  async notify(message, options) {
-    return await this.run(({ message: message2, options: options2 }) => {
-      figma.notify(message2, options2);
-    }, { message: message.toString(), options });
-  }
-  async resizeUI(width, height) {
-    return this.run(({ width: width2, height: height2 }) => {
-      figma.ui.resize(Math.floor(width2), Math.floor(height2));
-    }, { width, height });
-  }
-  async getCurrentUser() {
-    return this.run(() => {
-      return figma.currentUser;
-    });
-  }
-  async supportsVideo() {
-    return this.run(async () => {
-      try {
-        const webm = "GkXfo0AgQoaBAUL3gQFC8oEEQvOBCEKCQAR3ZWJtQoeBAkKFgQIYU4BnQI0VSalmQCgq17FAAw9CQE2AQAZ3aGFtbXlXQUAGd2hhbW15RIlACECPQAAAAAAAFlSua0AxrkAu14EBY8WBAZyBACK1nEADdW5khkAFVl9WUDglhohAA1ZQOIOBAeBABrCBCLqBCB9DtnVAIueBAKNAHIEAAIAwAQCdASoIAAgAAUAmJaQAA3AA/vz0AAA=";
-        await figma.createVideoAsync(figma.base64Decode(webm));
-        return true;
-      } catch (e) {
-        return false;
-      }
-    });
-  }
-  async getClientStorage(key) {
-    return this.run(async (key2) => {
-      return await figma.clientStorage.getAsync(key2);
-    }, key);
-  }
-  async setClientStorage(key, value) {
-    return this.run(async (args) => {
-      return await figma.clientStorage.setAsync(args.key, args.value);
-    }, { key, value });
-  }
-  async deleteClientStorage(key) {
-    return this.run(async (key2) => {
-      return await figma.clientStorage.deleteAsync(key2);
-    }, key);
-  }
   init() {
     if (this.initialized)
       return;
@@ -160,21 +119,7 @@ class FigmaScene {
         if (callback) {
           await callback(returnValue);
         }
-      } else if (msg && msg.action === "figma-scene-init") {
-        this.setupFigmaFunctions(msg.functions);
       }
-    });
-  }
-  setupFigmaFunctions(functions) {
-    functions.forEach((name) => {
-      this[name] = (...args) => {
-        return this.run((args2) => {
-          if (typeof figma[args2.name] === "function") {
-            const func = figma[args2.name];
-            return func.apply(null, args2.args);
-          }
-        }, { name, args });
-      };
     });
   }
   setupFigmaUIMessageHandler() {
